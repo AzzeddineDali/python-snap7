@@ -1,5 +1,5 @@
 """
-Script To Send & Receive Data From PLC SIEMENS
+Script To Send & Receive Data => PLC SIEMENS
 PUT / GET Communication
 """
 # Import Modules
@@ -21,7 +21,7 @@ finally:
 # Change Current Directory Working
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# Create Instance plc
+# Create Instance PLC
 plc = snap7.client.Client()
 
 # Connect To PLC
@@ -33,9 +33,9 @@ def read_data_from_PLC(db_number: int, start_offset: int, data_size: int):
     - Function To Read Data From Data Block
     - Stock Data In List
     Args :
-        db_number    : Data block Number To Read
-        start_offset : Start Offset To Read from DB
-        data_size    : Length Of Data To Read
+        db_number    : Data Block Number To Read
+        start_offset : Start Offset To Read From DB
+        data_size    : Length Of Data To Read (Byte)
 
     Return :
         List 
@@ -65,13 +65,26 @@ def write_data_in_PLC(db_number: int, start_offset: int, data_size: int, data_to
         plc.db_write(db_number, start_offset, reading_data)
 
 
+def print_values(data_list, db_number):
+    """
+    To Print Results In Screen
+    """
+    for mot in range(len(data_list)):
+        if mot == 0:
+            print(f"\nData Block N: {db_number}\n")
+        print(f"values[{mot}] : {data_list[mot]}")
+    print("-" * 20)
+
+
 if __name__ == "__main__":
     """
-    This Will No Be Running In Case Of Import Module
+    This Will Not Be Running In Case Of Import Module
     """
+
     db_number = 10
     start_offset = 0
     data_size = 20
+    # Create Random List Of Integers
     data_to_write = [random.randrange(1, 1000) for i in range(10)]
 
     # Call read_data_from_PLC Fuction
@@ -79,11 +92,11 @@ if __name__ == "__main__":
 
     # Make Txt File Before Changing Values
     with open("plc_data.txt", 'w') as data_file:
-        data_file.write("------Data Before Changing------\n")
-        for mot in data_receive:
-            data_file.write("--- " + str(mot)+" ---\n")
+        data_file.write("Values Before Changing\n")
+        for line in data_receive:
+            data_file.write("- " + str(line)+"\n")
 
-    print(f"Result Before: {data_receive}")
+    #print_values(data_receive, db_number)
 
     # Call write_data_in_PLC Fuction
     write_data_in_PLC(db_number, start_offset, data_size, data_to_write)
@@ -91,8 +104,8 @@ if __name__ == "__main__":
 
     # Get Values After Changing Values
     with open("plc_data.txt", 'a') as data_file:
-        data_file.write("------ Data After Changing ------\n")
-        for mot in data_receive:
-            data_file.write("--- " + str(mot)+" ---\n")
+        data_file.write("\nValues After Changing\n")
+        for line in data_receive:
+            data_file.write("- " + str(line)+"\n")
 
-    print(f"Result After: {data_receive}")
+    print_values(data_receive, db_number)
